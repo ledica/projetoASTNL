@@ -1,27 +1,27 @@
 library(scatterplot3d)
 
 
-#dados<-read.csv("FOGO_MEDIA_DIARIA.csv",header=T, sep=" ")
-#str(dados)
-#mes<-dados[1:6500,1]#
-#temp<-dados[1:6500,2]#
-#chuva<-dados[1:6500,3]#
-#u10cm<-dados[1:6500,4]#
-#u2m<-dados[1:6500,5]#
-#fogo<-dados[1:6500,6]#
-#plot(u2m) 
-
-dados<-read.csv("FOGO_MEDIA_MENSAL.csv",header=T, sep=" ")
+dados<-read.csv("FOGO_MEDIA_DIARIA.csv",header=T, sep=" ")
 str(dados)
-mes<-dados[1:220,1]#
-temp<-dados[1:220,2]#
-chuva<-dados[1:220,3]#
-u10cm<-dados[1:220,4]#
-u2m<-dados[1:220,5]#
-fogo<-dados[1:220,6]#
+mes<-dados[1:6500,1]#
+temp<-dados[1:6500,2]#
+chuva<-dados[1:6500,3]#
+u10cm<-dados[1:6500,4]#
+u2m<-dados[1:6500,5]#
+fogo<-dados[1:6500,6]#
+plot(u2m) 
+
+#dados<-read.csv("FOGO_MEDIA_MENSAL.csv",header=T, sep=" ")
+#str(dados)
+#mes<-dados[1:220,1]#
+#temp<-dados[1:220,2]#
+#chuva<-dados[1:220,3]#
+#u10cm<-dados[1:220,4]#
+#u2m<-dados[1:220,5]#
+#fogo<-dados[1:220,6]#
  
 
-variavel_teste=temp
+variavel_teste=u10cm
 
 suppressMessages(library('nonlinearTseries'))
 library('plot3D')
@@ -29,10 +29,10 @@ library('plot3D')
 old.par = par(mfrow = c(1, 2))
 # tau-delay estimation based on the autocorrelation function
 tau.acf = timeLag(variavel_teste, technique = "acf",
-                  lag.max = 200, do.plot = T)
+                  lag.max = 100, do.plot = T)
 # tau-delay estimation based on the mutual information function
 tau.ami = timeLag(temp, technique = "ami", 
-                  lag.max = 200, do.plot = T)
+                  lag.max = 100, do.plot = T)
 par(old.par)
 
 
@@ -67,29 +67,29 @@ cat("Sample entropy estimate: ", mean(se.est), "\n")
 #One of the more important characteristics of a chaotic system is its sensitivity to initial conditions. As a consequence of this sensitivity, close trajectories diverge exponentially fast. The maximum Lyapunov exponent measures the average rate of divergence of close trajectories in the system. The maxLyapunov function can be used for computing this divergence through time. To define what is a close trajectory we make use of the radius parameter. After the computation of the divergence rates we can get an estimate of the maximum Lyapunov exponent by performing a linear regression (estimate function), just as we did with the correlation dimension.
 # get the sampling period of the lorenz simulation
 # computing the differences of time (all differences should be equal)
-sampling.period = diff(dados$time)[1]
-ml = maxLyapunov(variavel_teste, 
-                 sampling.period=0.01,
-                 min.embedding.dim = emb.dim,
-                 max.embedding.dim = emb.dim + 3,
-                 time.lag = tau.ami, 
-                 radius=1,
-                 max.time.steps=1000,
-                 do.plot=FALSE)
-plot(ml,type="l", xlim = c(0,8))
+#sampling.period = diff(dados$time)[1]
+#ml = maxLyapunov(variavel_teste, 
+#                 sampling.period=0.01,
+#                 min.embedding.dim = emb.dim,
+#                 max.embedding.dim = emb.dim + 3,
+#                 time.lag = tau.ami, 
+#                 radius=1,
+#                 max.time.steps=1000,
+#                 do.plot=FALSE)
+#plot(ml,type="l", xlim = c(0,8))
 
-ml.est = estimate(ml, regression.range = c(0,3),
-                  do.plot = T,type="l")
+#ml.est = estimate(ml, regression.range = c(0,3),
+#                  do.plot = T,type="l")
 
-cat("--- estimate: ", ml.est,"\n")
+#cat("--- estimate: ", ml.est,"\n")
 
-cat("--- estimate: ",cd.est,"\n")
+#cat("--- estimate: ",cd.est,"\n")
 
 
 st = surrogateTest(variavel_teste,significance = 0.05,one.sided = F,
                    FUN = timeAsymmetry, do.plot=F)
 plot(st)
 
-rqa.analysis=rqa(time.series = variavel_teste, embedding.dim=3, time.lag=179,
+rqa.analysis=rqa(time.series = variavel_teste, embedding.dim=2, time.lag=2,
                  radius=1.2,lmin=2,do.plot=FALSE,distanceToBorder=2)
 plot(rqa.analysis)
